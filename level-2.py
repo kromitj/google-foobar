@@ -109,14 +109,79 @@ def player_on_destination(dest, player_loc):
     return dest == BOARD[player_loc[0]][player_loc[1]]
 
 
-result = player_move([2,3], MOVES, 0, 39, [])
-print(result)
+# result = player_move([2,3], MOVES, 0, 39, [])
+# print(result)
 
 
+shortest_path = False
 
 
+def find_path(player_loc, dest, places_been, shortest_path):
+    if (move_valid(player_loc, places_been) == False): return False
+    places_been.append(player_loc)
+    print(places_been)
+    if (player_on_destination(dest, player_loc)): 
+        if shortest_path == False or len(places_been) < shortest_path:
+            shortest_path = len(places_been)
+            return shortest_path
+
+    response = find_path(calc_move(player_loc, MOVES[0]),dest, places_been, shortest_path)
+    if (response != False): 
+        if shortest_path == False or response < shortest_path:
+            shortest_path = response
+            return shortest_path
+
+    response = find_path(calc_move(player_loc, MOVES[1]),dest, places_been, shortest_path)  
+    if (response != False): 
+        if shortest_path == False or response < shortest_path:
+            shortest_path = response
+            return shortest_path
+        
+
+    response = find_path(calc_move(player_loc, MOVES[2]),dest, places_been, shortest_path)  
+    if (response != False): 
+        if shortest_path == False or response < shortest_path:
+            shortest_path = response
+            return shortest_path
+        
+
+    response = find_path(calc_move(player_loc, MOVES[3]),dest, places_been, shortest_path)  
+    if (response != False): 
+        if shortest_path == False or response < shortest_path:
+            shortest_path = response
+            return shortest_path
+        
+
+    response = find_path(calc_move(player_loc, MOVES[4]),dest, places_been, shortest_path)  
+    if (response != False): 
+        if shortest_path == False or response < shortest_path:
+            shortest_path = response
+            return shortest_path
+        
+
+    response = find_path(calc_move(player_loc, MOVES[5]),dest, places_been, shortest_path)  
+    if (response != False): 
+        if shortest_path == False or response < shortest_path:
+            shortest_path = response
+            return shortest_path
+        
+
+    response = find_path(calc_move(player_loc, MOVES[6]),dest, places_been, shortest_path) 
+    if (response != False): 
+        if shortest_path == False or response < shortest_path:
+            shortest_path = response
+            return shortest_path
+        
+
+    response = find_path(calc_move(player_loc, MOVES[7]),dest, places_been, shortest_path)  
+    if (response != False): 
+        if shortest_path == False or response < shortest_path:
+            shortest_path = response
+            return shortest_path
 
 
+path = find_path([0,0], 1, [], shortest_path)
+print(path)
 
 
 

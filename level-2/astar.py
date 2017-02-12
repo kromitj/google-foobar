@@ -4,6 +4,7 @@ cols = 8
 rows = 8
 cell_num = 0
 grid = [[0 for x in range(cols)] for y in range(rows)]
+path = False
 
 
 class Cell(object):
@@ -16,6 +17,7 @@ class Cell(object):
 		self.h = 0
 		self.val = val
 		self.neighbors = []
+		self.previous = False
 	
 	def calc_neighbor(self, move):
 		return [(self.y + move[0]), (self.x + move[1])]
@@ -45,8 +47,11 @@ class Cell(object):
 	def calc_heuristic(self, neighbor):
 		return math.sqrt( ( (self.y - neighbor.y)**2 + (self.x - neighbor.y)**2) )
 
+	def show_less(self):
+		return [[self.val],[self.x],[self.y],[self.g],[self.h]]
+
 	def show(self):
-		return self.val
+		 return [[self.val],[self.x],[self.y]]
 
 
 
@@ -63,14 +68,21 @@ open_set = []
 closed_set = []
 start = grid[2][3]
 end = grid[4][4]
-show_grid = [["_" for x in range(cols)] for y in range(rows)]
+show_grid = [[0 for x in range(cols)] for y in range(rows)]
 open_set.append(start)
+
+def grid_path(paths, grid):
+	for col in range(cols):
+		for row in range(rows):
+			grid[col][row] = " "
+	for path in paths:
+		grid[path.y][path.x] = "$"
 
 def update_grid(grid, open, closed):
 	for set in open:
-		grid[set.y][set.x] = "^"
+		grid[set.y][set.x] = 1
 	for set in closed:
-		grid[set.y][set.x] = "="
+		grid[set.y][set.x] = 2
 
 def draw_grid(grid):
 	for row in show_grid:
@@ -80,14 +92,20 @@ def draw():
 	if len(open_set) > 0:
 		lowest_index = 0
 		for i in range(len(open_set)):
-			if open_set[i] == end:
-				print("you handed on the square")
-				return False
 			if open_set[i].f < open_set[lowest_index].f:
 				lowest_index = i
 		current = open_set[lowest_index]
 		if open_set[lowest_index] == end:
-			print("you handed on the square")
+			path = []
+			temp = current
+			path.append(temp)
+			while temp.previous:
+				path.append(temp.previous)
+				temp = temp.previous
+			grid_path(path, show_grid)
+			draw_grid(show_grid)
+
+			print("you handed on the squajhjghjghre")
 			return False
 		modify_set(open_set, "remove", current)
 		modify_set(closed_set, "add", current)
@@ -105,6 +123,7 @@ def draw():
 				# calc heuristic
 				neighbor.h = current.calc_heuristic(neighbor)
 				neighbor.f = neighbor.g + neighbor.h
+				neighbor.previous = current
 
 
 		update_grid(show_grid, open_set, closed_set)
@@ -128,9 +147,12 @@ def modify_set(set, action, value):
 		set.remove(value)
 
 status = True
+count = 0
 while status == True:
+	print(count)
+	# user = raw_input("type in enter")
 	status = draw()
-	user = raw_input("type in enter")
+	count+=1
 
 # modify_set(open_set, "add", start)
 # draw()

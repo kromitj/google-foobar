@@ -1,5 +1,9 @@
 import math
 
+
+# globals
+# these are going to go in a Board Class,exept path which
+# will go in the AStar class
 cols = 8
 rows = 8
 cell_num = 0
@@ -18,6 +22,7 @@ class Cell(object):
 		self.val = val
 		self.neighbors = []
 		self.previous = False
+		# self.get_attrs = {"x": self.x, "y": self.y, "f: self.f, "g": self.g, "h": self.h, "val": self.val}
 	
 	def calc_neighbor(self, move):
 		return [(self.y + move[0]), (self.x + move[1])]
@@ -47,30 +52,10 @@ class Cell(object):
 	def calc_heuristic(self, neighbor):
 		return math.sqrt( ( (self.y - neighbor.y)**2 + (self.x - neighbor.y)**2) )
 
-	def show_less(self):
-		return [[self.val],[self.x],[self.y],[self.g],[self.h]]
 
-	def show(self):
-		 return [[self.val],[self.x],[self.y]]
-
-
-
-for col in range(cols):
-	for row in range(rows):
-		grid[col][row] = Cell(row, col ,cell_num)
-		cell_num+=1
-
-for col in range(cols):
-	for row in range(rows):
-		grid[col][row].find_valid_neighbors(grid)
-
-open_set = []
-closed_set = []
-start = grid[2][3]
-end = grid[4][4]
-show_grid = [[0 for x in range(cols)] for y in range(rows)]
-open_set.append(start)
-
+# global functions 
+# should be put into a class
+# i think Board class
 def grid_path(paths, grid):
 	for col in range(cols):
 		for row in range(rows):
@@ -80,22 +65,50 @@ def grid_path(paths, grid):
 
 def update_grid(grid, open, closed):
 	for set in open:
-		grid[set.y][set.x] = 1
+		grid[set.y][set.x] = "@"
 	for set in closed:
-		grid[set.y][set.x] = 2
+		grid[set.y][set.x] = "*"
 
 def draw_grid(grid):
 	for row in show_grid:
 		print(row)
+		
+		
+
+# setup
+# these two for loop seed the grid array
+# these could go into the Board class as well
+for col in range(cols):
+	for row in range(rows):
+		grid[col][row] = Cell(row, col ,cell_num)
+		cell_num+=1
+
+for col in range(cols):
+	for row in range(rows):
+		grid[col][row].find_valid_neighbors(grid)
+
+# these can go in a AStar class 
+# Astar will hold data needed for the algorithm
+# so , open_set, closed_set, start, end
+# show grid will go in Board class
+open_set = []
+closed_set = []
+start = grid[2][3]
+end = grid[4][4]
+show_grid = [[" " for x in range(cols)] for y in range(rows)]
+open_set.append(start)
 
 def draw():
+	# This func will go into the AStar class
+
+	print("_______________________________________")
 	if len(open_set) > 0:
-		lowest_index = 0
+		lowest_f_val = 0
 		for i in range(len(open_set)):
-			if open_set[i].f < open_set[lowest_index].f:
-				lowest_index = i
-		current = open_set[lowest_index]
-		if open_set[lowest_index] == end:
+			if open_set[i].f < open_set[lowest_f_val].f:
+				lowest_f_val = i
+		current = open_set[lowest_f_val]
+		if open_set[lowest_f_val] == end:
 			path = []
 			temp = current
 			path.append(temp)
@@ -103,40 +116,30 @@ def draw():
 				path.append(temp.previous)
 				temp = temp.previous
 			grid_path(path, show_grid)
+			print("you handed on the squajhjghjghre")
+			print("_________________________________")
 			draw_grid(show_grid)
 
-			print("you handed on the squajhjghjghre")
-			return False
+			return len(path)
 		modify_set(open_set, "remove", current)
 		modify_set(closed_set, "add", current)
 		neighbors = current.neighbors
 		for neighbor in neighbors:
 
 			if neighbor not in closed_set:
-				temp_g = current.g +1
+				temp_g = current.g+1
 				if neighbor in open_set:
 					if temp_g < neighbor.g:
 						neighbor.g = temp_g
 				else:
 					neighbor.g = temp_g	
 					open_set.append(neighbor)
-				# calc heuristic
 				neighbor.h = current.calc_heuristic(neighbor)
 				neighbor.f = neighbor.g + neighbor.h
 				neighbor.previous = current
-
-
 		update_grid(show_grid, open_set, closed_set)
 		draw_grid(show_grid)
 		return True
-
-		
-
-
-
-
-
-
 	else:
 		print("no solution")
 
@@ -147,12 +150,9 @@ def modify_set(set, action, value):
 		set.remove(value)
 
 status = True
-count = 0
 while status == True:
-	print(count)
-	# user = raw_input("type in enter")
 	status = draw()
-	count+=1
+print status-1
 
-# modify_set(open_set, "add", start)
-# draw()
+
+
